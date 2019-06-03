@@ -3,7 +3,6 @@ package proxmox
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/textproto"
@@ -40,11 +39,6 @@ func (c *Client) Upload(storage StorageRef, filename, content string) error {
 	if err != nil {
 		return err
 	}
-	response, err := c.session.Do(request)
-	if err != nil {
-		return err
-	}
-	resp, _ := ioutil.ReadAll(response.Body)
-	fmt.Printf("%v\n", string(resp))
+	_, err = c.session.Do(request)
 	return err
 }
