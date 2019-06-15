@@ -237,6 +237,17 @@ func (c *Client) GetVmAgentNetworkInterfaces(vmr *VmRef) ([]AgentNetworkInterfac
 	return ifs, err
 }
 
+type AgentFileRead struct {
+	Content   string
+	Truncated bool
+}
+
+func (c *Client) GetVmAgentFileRead(vmr *VmRef, file string) (AgentFileRead, error) {
+	var agentFileRead AgentFileRead
+	err := c.doAgentGet(vmr, fmt.Sprintf("file-read?file=%s", file), &agentFileRead)
+	return agentFileRead, err
+}
+
 func (c *Client) doAgentGet(vmr *VmRef, command string, output interface{}) error {
 	err := c.CheckVmRef(vmr)
 	if err != nil {
