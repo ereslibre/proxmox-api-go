@@ -93,15 +93,23 @@ func ResponseJSON(resp *http.Response) (jbody map[string]interface{}, err error)
 func TypedResponse(resp *http.Response, v interface{}) error {
 	var intermediate struct {
 		Data struct {
-			Result json.RawMessage `json:"result"`
+			Content json.RawMessage `json:"content"`
+			Result  json.RawMessage `json:"result"`
 		} `json:"data"`
 	}
 	err := decodeResponse(resp, &intermediate)
 	if err != nil {
 		return fmt.Errorf("error reading response envelope: %v", err)
 	}
-	if err = json.Unmarshal(intermediate.Data.Result, v); err != nil {
-		return fmt.Errorf("error unmarshalling result %v", err)
+	if len(intermediate.Data.Content) > 0 {
+		if err = json.Unmarshal(intermediate.Data.Content, v); err != nil {
+			return fmt.Errorf("error unmarshalling content %v", err)
+		}
+	}
+	if len(intermediate.Data.Result) > 0 {
+		if err = json.Unmarshal(intermediate.Data.Result, v); err != nil {
+			return fmt.Errorf("error unmarshalling result %v", err)
+		}
 	}
 	return nil
 }
